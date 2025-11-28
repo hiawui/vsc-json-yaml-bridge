@@ -106,7 +106,7 @@ async function saveYamlToFile(
         // 获取当前文件路径并生成 YAML 文件路径
         const fileDir = path.dirname(sourceFilePath);
         const fileName = path.basename(sourceFilePath, path.extname(sourceFilePath));
-        const yamlFilePath = path.join(fileDir, `${fileName}.jv.yaml`);
+        const yamlFilePath = path.join(fileDir, `${fileName}.jyb.yaml`);
         const yamlFileUri = vscode.Uri.file(yamlFilePath);
         
         // 将 YAML 内容写入文件
@@ -141,7 +141,7 @@ async function saveJsonToFile(
         // 获取当前文件路径并生成 JSON 文件路径
         const fileDir = path.dirname(sourceFilePath);
         const fileName = path.basename(sourceFilePath, path.extname(sourceFilePath));
-        const jsonFilePath = path.join(fileDir, `${fileName}.jv.json`);
+        const jsonFilePath = path.join(fileDir, `${fileName}.jyb.json`);
         const jsonFileUri = vscode.Uri.file(jsonFilePath);
         
         // 将 JSON 内容写入文件
@@ -192,8 +192,8 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('JSONL to YAML Converter extension is now active');
     
     // 注册 JSONL 转 YAML 命令
-    const disposable = vscode.commands.registerCommand('jsonlToYaml.convert', async () => {
-        console.log('jsonlToYaml.convert command executed');
+    const disposable = vscode.commands.registerCommand('jsonYamlBridge.jsonlToYaml', async () => {
+        console.log('jsonYamlBridge.jsonlToYaml command executed');
         const editor = getActiveEditor();
         if (!editor) {
             return;
@@ -222,8 +222,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     // 注册 JSON 转 YAML 命令
-    const jsonToYamlDisposable = vscode.commands.registerCommand('jsonlToYaml.jsonToYaml', async () => {
-        console.log('jsonlToYaml.jsonToYaml command executed');
+    const jsonToYamlDisposable = vscode.commands.registerCommand('jsonYamlBridge.jsonToYaml', async () => {
+        console.log('jsonYamlBridge.jsonToYaml command executed');
         const editor = getActiveEditor();
         if (!editor) {
             return;
@@ -262,8 +262,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     // 注册 YAML 转 JSON 命令
-    const yamlToJsonDisposable = vscode.commands.registerCommand('jsonlToYaml.yamlToJson', async () => {
-        console.log('jsonlToYaml.yamlToJson command executed');
+    const yamlToJsonDisposable = vscode.commands.registerCommand('jsonYamlBridge.yamlToJson', async () => {
+        console.log('jsonYamlBridge.yamlToJson command executed');
         const editor = getActiveEditor();
         if (!editor) {
             return;

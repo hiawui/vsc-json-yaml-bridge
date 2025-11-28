@@ -22,16 +22,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "jsonlToYaml.convert",
-        "title": "Convert JSONL to YAML"
+        "command": "jsonYamlBridge.jsonlToYaml",
+        "title": "JYB: JSON Lines to YAML"
       },
       {
-        "command": "jsonlToYaml.jsonToYaml",
-        "title": "Convert JSON to YAML"
+        "command": "jsonYamlBridge.jsonToYaml",
+        "title": "JYB: JSON to YAML"
       },
       {
-        "command": "jsonlToYaml.yamlToJson",
-        "title": "Convert YAML to JSON"
+        "command": "jsonYamlBridge.yamlToJson",
+        "title": "JYB: YAML to JSON"
       }
     ]
   },

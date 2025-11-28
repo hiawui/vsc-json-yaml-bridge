@@ -29,19 +29,38 @@ function formatString(value: string): string {
     // 如果包含换行符或 ": "，使用块字面量样式
     if (value.includes('\n') || value.includes(': ')) {
         const lines = value.split('\n');
-        // 保留末尾的换行符信息
-        const endsWithNewline = value.endsWith('\n');
-        // 移除末尾的空行（但保留一个如果原字符串以换行符结尾）
-        while (lines.length > 0 && lines[lines.length - 1] === '' && !endsWithNewline) {
+        
+        // 判断是否需要使用 chomping indicator
+        let chompingIndicator = '';
+        
+        if (value.endsWith('\n')) {
+            // 如果以换行符结尾
+            // 检查是否有多个连续换行符在末尾
+            if (value.endsWith('\n\n')) {
+                // 如果有多个换行符，使用 '+' 保留所有换行符
+                chompingIndicator = '+';
+            } else {
+                // 只有一个换行符，这是默认行为，不需要指示符
+                // 但如果我们想要严格还原，可能需要考虑 strip '-' 的情况
+                // 这里我们使用默认行为（保留一个换行符）
+                chompingIndicator = '';
+            }
+        } else {
+            // 如果不以换行符结尾，使用 '-' 去除末尾换行符
+            chompingIndicator = '-';
+        }
+        
+        // 移除 split 产生的末尾空字符串（如果原字符串以 \n 结尾，split 会产生一个空串）
+        if (lines.length > 0 && lines[lines.length - 1] === '') {
             lines.pop();
         }
-        // 返回块字面量标记和内容，内容会在调用处处理缩进
-        return `|\n${lines.join('\n')}`;
+        
+        return `|${chompingIndicator}\n${lines.join('\n')}`;
     }
     // 转义字符串
     const escaped = escapeString(value);
-    // 如果需要引号，使用双引号
-    if (needsQuotes(value) || escaped !== value) {
+    // 如果需要引号或为空字符串，使用双引号
+    if (value === '' || needsQuotes(value) || escaped !== value) {
         return `"${escaped}"`;
     }
     return value;
@@ -58,9 +77,9 @@ function formatMultilineYaml(yamlValue: string, prefix: string, indentStr: strin
     const lines = yamlValue.split('\n');
     const result: string[] = [];
     
-    // 如果第一行是块字面量标记 (|)，直接跟在前缀后面
-    if (lines[0] === '|') {
-        result.push(`${indentStr}${prefix}|`);
+    // 如果第一行是块字面量标记 (|)，或者带 chomping indicator 的标记
+    if (lines[0].match(/^\|[+\-]?$/)) {
+        result.push(`${indentStr}${prefix}${lines[0]}`);
         lines.slice(1).forEach(line => {
             result.push(`${indentStr}  ${line}`);
         });

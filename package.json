@@ -1,0 +1,57 @@
+{
+  "name": "json-yaml-bridge",
+  "displayName": "JSON YAML Bridge",
+  "description": "Seamlessly convert between JSON, JSONL, and YAML formats in VS Code",
+  "version": "1.0.0",
+  "publisher": "hiawui",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hiawui/vsc-json-yaml-bridge"
+  },
+  "license": "BSD-3-Clause",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "categories": [
+    "Formatters"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "jsonlToYaml.convert",
+        "title": "Convert JSONL to YAML"
+      },
+      {
+        "command": "jsonlToYaml.jsonToYaml",
+        "title": "Convert JSON to YAML"
+      },
+      {
+        "command": "jsonlToYaml.yamlToJson",
+        "title": "Convert YAML to JSON"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^4.9.4"
+  }
+}

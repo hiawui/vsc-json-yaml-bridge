@@ -26,8 +26,8 @@ function needsQuotes(str: string): boolean {
  * 格式化字符串值
  */
 function formatString(value: string): string {
-    // 如果包含换行符，使用块字面量样式
-    if (value.includes('\n')) {
+    // 如果包含换行符或 ": "，使用块字面量样式
+    if (value.includes('\n') || value.includes(': ')) {
         const lines = value.split('\n');
         // 保留末尾的换行符信息
         const endsWithNewline = value.endsWith('\n');
@@ -68,7 +68,7 @@ function formatMultilineYaml(yamlValue: string, prefix: string, indentStr: strin
         // 多行对象或数组
         result.push(`${indentStr}${prefix}`);
         lines.forEach(line => {
-            result.push(`${indentStr}  ${line}`);
+            result.push(line);
         });
     }
     
@@ -125,8 +125,9 @@ export function valueToYaml(value: any, indent: number = 0): string {
         const items: string[] = [];
         for (const item of value) {
             const itemYaml = valueToYaml(item, indent + 2);
-            // 如果项目是多行，需要正确处理缩进
-            if (itemYaml.includes('\n')) {
+            // 如果项目是多行或是已缩进的块（对象/数组），需要正确处理缩进
+            // 检查 valueYaml 是否以空格开头，表示它是一个块级元素
+            if (itemYaml.includes('\n') || itemYaml.startsWith(' ')) {
                 items.push(...formatMultilineYaml(itemYaml, '- ', indentStr));
             } else {
                 items.push(`${indentStr}- ${itemYaml}`);
@@ -145,11 +146,11 @@ export function valueToYaml(value: any, indent: number = 0): string {
             const keyValue = value[key];
             const keyStr = needsQuotes(key) ? `"${escapeString(key)}"` : key;
             const valueYaml = valueToYaml(keyValue, indent + 2);
-            // 如果值是多行或块字面量，需要正确处理缩进
-            if (valueYaml.includes('\n')) {
+            // 如果值是多行或已缩进的块（对象/数组），需要正确处理缩进
+            if (valueYaml.includes('\n') || valueYaml.startsWith(' ')) {
                 items.push(...formatMultilineYaml(valueYaml, `${keyStr}: `, indentStr));
             } else {
-                items.push(`${keyStr}: ${valueYaml}`);
+                items.push(`${indentStr}${keyStr}: ${valueYaml}`);
             }
         }
         return items.join('\n');

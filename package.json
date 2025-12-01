@@ -4,6 +4,7 @@
   "description": "Seamlessly convert between JSON, JSONL, and YAML formats in VS Code",
   "version": "1.0.0",
   "publisher": "hiawui",
+  "icon": "images/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/hiawui/vsc-json-yaml-bridge"
@@ -32,6 +33,14 @@
       {
         "command": "jsonYamlBridge.yamlToJson",
         "title": "JYB: YAML to JSON"
+      },
+      {
+        "command": "jsonYamlBridge.prettyJson",
+        "title": "JYB: Pretty JSON"
+      },
+      {
+        "command": "jsonYamlBridge.minifyJson",
+        "title": "JYB: Minify JSON"
       }
     ]
   },
@@ -52,6 +61,7 @@
     "@types/node": "^18.x",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^2.22.0",
+    "sharp": "^0.34.5",
     "typescript": "^4.9.4"
   }
 }

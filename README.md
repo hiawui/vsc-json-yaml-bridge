@@ -7,8 +7,9 @@ A powerful VS Code extension that seamlessly converts between JSONL, JSON, and Y
 - **JSONL to YAML**: Convert JSON Lines (newline-delimited JSON) to readable YAML format.
 - **JSON to YAML**: Convert standard JSON files or selections to YAML.
 - **YAML to JSON**: Convert YAML files or selections to JSON format.
+- **Pretty JSON**: Format JSON with indentation for better readability.
+- **Minify JSON**: Compress JSON by removing whitespace.
 - **Smart Selection**: Works on selected text or the entire document if nothing is selected.
-- **New File Output**: Saves the converted content to a new file (e.g., `.jv.yaml`) to preserve your original data.
 
 ## Usage
 
@@ -29,6 +30,12 @@ A powerful VS Code extension that seamlessly converts between JSONL, JSON, and Y
 2. (Optional) Select the YAML content.
 3. Open Command Palette.
 4. Run command: **Convert YAML to JSON**.
+
+### Formatting JSON
+1. Open a JSON file.
+2. (Optional) Select the JSON content.
+3. Open Command Palette.
+4. Run command: **Pretty JSON** (to format) or **Minify JSON** (to compress).
 
 ## Examples
 

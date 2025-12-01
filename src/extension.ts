@@ -300,8 +300,72 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(`Failed to convert YAML to JSON: ${error}`);
         }
     });
+
+    // 注册 Pretty JSON 命令
+    const prettyJsonDisposable = vscode.commands.registerCommand('jsonYamlBridge.prettyJson', async () => {
+        console.log('jsonYamlBridge.prettyJson command executed');
+        const editor = getActiveEditor();
+        if (!editor) {
+            return;
+        }
+        
+        const target = getConversionTarget(editor.document, editor.selections, false);
+        const trimmedText = target.text.trim();
+        
+        if (!trimmedText) {
+            vscode.window.showWarningMessage('No content to format.');
+            return;
+        }
+        
+        try {
+            const jsonObject = JSON.parse(trimmedText);
+            const prettyJson = JSON.stringify(jsonObject, null, 2);
+            
+            await editor.edit(editBuilder => {
+                editBuilder.replace(target.range, prettyJson);
+            });
+            
+            if (editor.document.languageId !== 'json' && !target.isSelection) {
+                vscode.languages.setTextDocumentLanguage(editor.document, 'json');
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to pretty print JSON: ${error}`);
+        }
+    });
+
+    // 注册 Minify JSON 命令
+    const minifyJsonDisposable = vscode.commands.registerCommand('jsonYamlBridge.minifyJson', async () => {
+        console.log('jsonYamlBridge.minifyJson command executed');
+        const editor = getActiveEditor();
+        if (!editor) {
+            return;
+        }
+        
+        const target = getConversionTarget(editor.document, editor.selections, false);
+        const trimmedText = target.text.trim();
+        
+        if (!trimmedText) {
+            vscode.window.showWarningMessage('No content to minify.');
+            return;
+        }
+        
+        try {
+            const jsonObject = JSON.parse(trimmedText);
+            const minifiedJson = JSON.stringify(jsonObject);
+            
+            await editor.edit(editBuilder => {
+                editBuilder.replace(target.range, minifiedJson);
+            });
+            
+            if (editor.document.languageId !== 'json' && !target.isSelection) {
+                vscode.languages.setTextDocumentLanguage(editor.document, 'json');
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to minify JSON: ${error}`);
+        }
+    });
     
-    context.subscriptions.push(disposable, jsonToYamlDisposable, yamlToJsonDisposable);
+    context.subscriptions.push(disposable, jsonToYamlDisposable, yamlToJsonDisposable, prettyJsonDisposable, minifyJsonDisposable);
 }
 
 /**

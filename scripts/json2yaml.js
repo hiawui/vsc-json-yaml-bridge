@@ -1,8 +1,11 @@
+const fs = require('fs');
+const path = require('path');
+
 /**
  * 转义字符串中的特殊字符
  * 使用 JSON.stringify 来自动处理所有需要转义的字符（控制字符、Unicode等）
  */
-function escapeString(str: string): string {
+function escapeString(str) {
     // JSON.stringify 会自动处理所有转义，包括：
     // - 控制字符：\n, \r, \t, \b, \f 等
     // - 反斜杠和引号
@@ -14,7 +17,7 @@ function escapeString(str: string): string {
 /**
  * 检查字符串是否需要使用引号
  */
-function needsQuotes(str: string): boolean {
+function needsQuotes(str) {
     // 如果包含特殊字符或看起来像数字/布尔值/null，需要引号
     return /^[\s\-:{}[\],&*#?|<>=!%@`]/.test(str) ||
         /^[\d\-]/.test(str) ||
@@ -25,7 +28,7 @@ function needsQuotes(str: string): boolean {
 /**
  * 格式化字符串值
  */
-function formatString(value: string): string {
+function formatString(value) {
     // 如果包含换行符或 ": "，使用块字面量样式
     if (value.includes('\n') || value.includes(': ')) {
         // 替换不支持的字符为空格
@@ -74,9 +77,9 @@ function formatString(value: string): string {
  * @param indentStr 当前缩进字符串
  * @returns 处理后的多行字符串数组
  */
-function formatMultilineYaml(yamlValue: string, prefix: string, indentStr: string): string[] {
+function formatMultilineYaml(yamlValue, prefix, indentStr) {
     const lines = yamlValue.split('\n');
-    const result: string[] = [];
+    const result = [];
     
     // 如果第一行是块字面量标记 (|)，或者带 chomping indicator 的标记
     if (lines[0].match(/^\|[+\-]?$/)) {
@@ -98,7 +101,7 @@ function formatMultilineYaml(yamlValue: string, prefix: string, indentStr: strin
 /**
  * 将 JavaScript 值转换为 YAML 格式
  */
-export function valueToYaml(value: any, indent: number = 0): string {
+function valueToYaml(value, indent = 0) {
     const indentStr = ' '.repeat(indent);
     
     if (value === null) {
@@ -142,7 +145,7 @@ export function valueToYaml(value: any, indent: number = 0): string {
         if (value.length === 0) {
             return '[]';
         }
-        const items: string[] = [];
+        const items = [];
         for (const item of value) {
             const itemYaml = valueToYaml(item, indent + 2);
             // 如果项目是多行或是已缩进的块（对象/数组），需要正确处理缩进
@@ -161,7 +164,7 @@ export function valueToYaml(value: any, indent: number = 0): string {
         if (keys.length === 0) {
             return '{}';
         }
-        const items: string[] = [];
+        const items = [];
         for (const key of keys) {
             const keyValue = value[key];
             const keyStr = needsQuotes(key) ? `"${escapeString(key)}"` : key;
@@ -182,7 +185,7 @@ export function valueToYaml(value: any, indent: number = 0): string {
 /**
  * 将单行 JSON 字符串转换为 YAML 格式
  */
-export function jsonToYaml(jsonString: string): string {
+function jsonToYaml(jsonString) {
     try {
         const jsonObject = JSON.parse(jsonString);
         const yamlText = valueToYaml(jsonObject, 0);
@@ -191,4 +194,48 @@ export function jsonToYaml(jsonString: string): string {
         throw new Error(`Failed to parse JSON: ${error}`);
     }
 }
+
+// Main Script Logic
+const args = process.argv.slice(2);
+
+if (args.length === 0) {
+    console.log('Usage: node scripts/json2yaml.js <file1> <file2> ...');
+    process.exit(1);
+}
+
+async function processFiles() {
+    for (const filePath of args) {
+        try {
+            const absolutePath = path.resolve(filePath);
+            if (!fs.existsSync(absolutePath)) {
+                console.error(`File not found: ${filePath}`);
+                continue;
+            }
+
+            const content = fs.readFileSync(absolutePath, 'utf8');
+            const trimmedText = content.trim();
+            
+            if (!trimmedText) {
+                console.warn(`Skipping empty file: ${filePath}`);
+                continue;
+            }
+
+            console.log(`Converting ${filePath}...`);
+            const yamlContent = jsonToYaml(trimmedText);
+
+            // Output filename logic matches extension.ts
+            const fileDir = path.dirname(absolutePath);
+            const fileName = path.basename(absolutePath, path.extname(absolutePath));
+            const yamlFilePath = path.join(fileDir, `${fileName}.jyb.yaml`);
+
+            fs.writeFileSync(yamlFilePath, yamlContent, 'utf8');
+            console.log(`Saved to ${yamlFilePath}`);
+
+        } catch (error) {
+            console.error(`Error converting ${filePath}: ${error.message}`);
+        }
+    }
+}
+
+processFiles();
 
